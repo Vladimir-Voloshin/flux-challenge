@@ -7,10 +7,6 @@
 var React = require('react');
 
 var JediMaster = React.createClass({
-
-    /**
-    * @return {object}
-    */
     render: function() {
         var entryClassName = 'css-slot';
         if(this.props.isred){
@@ -19,11 +15,11 @@ var JediMaster = React.createClass({
 
         return (
             <li className={entryClassName}>
-                <h3>{this.props.jediMaster.name}</h3>
-                <h6>Homeworld: {this.props.jediMaster.homeworld.name}</h6>
+                <h3>{(this.props.jediMaster != null)?this.props.jediMaster.name:''}</h3>
+                <h6>{(this.props.jediMaster != null)?'Homeworld: '+this.props.jediMaster.homeworld.name:''}</h6>
             </li>
         );
-    },
+    }
 });
 
 module.exports = JediMaster;

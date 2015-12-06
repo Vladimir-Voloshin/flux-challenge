@@ -14,8 +14,9 @@ var JediStore = require('../stores/JediStore');
 
 function getJediesState() {
     return {
-        storedJedies: JediStore.getAll(),
-        localJedi: JediStore.getLocalJedi()
+        disabledBtns: JediStore.getDisabledBtns(),
+        localJedi:    JediStore.getLocalJedi(),
+        storedJedies: JediStore.getAll()
     };
 }
 
@@ -45,15 +46,12 @@ var Main = React.createClass({
         JediStore.removeChangeListener(this._onChange);
     },
 
-    /**
-    * @return {object}
-    */
     render: function() {
         return (
             <section className="css-scrollable-list">
                 <JediList
                     storedJedies={this.state.storedJedies} localJedi={this.state.localJedi} />
-                <Footer />
+                <Footer disabledBtns={this.state.disabledBtns} />
             </section>
         );
     },

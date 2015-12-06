@@ -11,11 +11,9 @@ var JediActions = require('../actions/JediActions');
 var Header = React.createClass({
 
     getInitialState: function() {
-        //return {data};
         return {data: []};
     },
     handleData: function(data) {
-        // do something with the data
         this.setState({
             data: data
         });

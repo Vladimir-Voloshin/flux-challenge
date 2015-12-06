@@ -1,7 +1,7 @@
 /**
  * User: Voloshin Vladimir
- * Date: 2015.12.02
- * Time: 12:11
+ * Date: 19.11.15
+ * Time: 11:11
  */
 
 var React = require('react');

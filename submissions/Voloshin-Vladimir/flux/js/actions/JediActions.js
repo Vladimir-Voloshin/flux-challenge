@@ -16,9 +16,6 @@ var JediActions = {
         });
     },
 
-    /**
-    * @param  {obj} jediMaster
-    */
     populateJediList: function(jediMaster) {
         AppDispatcher.dispatch({
             actionType: AppConstants.JEDI_POPULATE_LIST,

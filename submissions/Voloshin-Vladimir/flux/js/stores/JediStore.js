@@ -12,18 +12,19 @@ var assign = require('object-assign');
 
 var CHANGE_EVENT = 'change';
 
+var _activeRequest;
 var _jedi = [];
-var localJedi;
+var _localJedi;
+var _pendingRequestsCount;
 
 function populateJediList(jediMaster) {
-    var startIndex = AppConstants.ROWS_AMOUNT % 2 ? Math.ceil(AppConstants.ROWS_AMOUNT / 2) : Math.floor(AppConstants.ROWS_AMOUNT / 2);
+    _pendingRequestsCount = AppConstants.ROWS_AMOUNT % 2 ? Math.ceil(AppConstants.ROWS_AMOUNT / 2)-1 : Math.floor(AppConstants.ROWS_AMOUNT / 2)-1;
     _jedi.push(jediMaster);
-    appendApprentice(jediMaster.apprentice.url, startIndex-1, false);
-    appendMaster(jediMaster.master.url, startIndex-1, false);
+    appendMaster(jediMaster.master.url, false);
 }
 
-function appendApprentice(jediMasterUrl, index, removeObsolete){
-    _pending = $.ajax({
+function appendApprentice(jediMasterUrl, removeObsolete){
+    _activeRequest = $.ajax({
         url: jediMasterUrl,
         dataType: 'json',
         cache: false,
@@ -32,8 +33,8 @@ function appendApprentice(jediMasterUrl, index, removeObsolete){
             if(removeObsolete){
                 _jedi.shift();
             }
-            if(index > 1) {
-                appendApprentice(data.apprentice.url, --index, removeObsolete);
+            if(_pendingRequestsCount-- > 1) {
+                appendApprentice(data.apprentice.url, removeObsolete);
             }else{
                 JediStore.emitChange();
             }
@@ -44,8 +45,8 @@ function appendApprentice(jediMasterUrl, index, removeObsolete){
     });
 }
 
-function appendMaster(jediMasterUrl, index, removeObsolete){
-    _pending = $.ajax({
+function appendMaster(jediMasterUrl, removeObsolete){
+    _activeRequest = $.ajax({
         url: jediMasterUrl,
         dataType: 'json',
         cache: false,
@@ -54,9 +55,14 @@ function appendMaster(jediMasterUrl, index, removeObsolete){
             if(removeObsolete){
                 _jedi.pop();
             }
-            if(index > 1) {
-                appendMaster(data.master.url, --index, removeObsolete);
+            if(_pendingRequestsCount-- > 1) {
+                appendMaster(data.master.url, removeObsolete);
             }else{
+                if(_jedi.length != AppConstants.ROWS_AMOUNT){
+                    for(var i=AppConstants.ROWS_AMOUNT-_jedi.length; i != 0; i--){
+                        _jedi.push(null);
+                    }
+                }
                 JediStore.emitChange();
             }
         }.bind(this),
@@ -68,18 +74,22 @@ function appendMaster(jediMasterUrl, index, removeObsolete){
 
 function scrollJediList(direction){
     if(direction){
-        appendMaster(_jedi[0].master.url, AppConstants.SCROLL_PER_CLICK, true);
+        appendMaster(_jedi[0].master.url, true);
     }else{
-        appendApprentice(_jedi[_jedi.length-1].apprentice.url, AppConstants.SCROLL_PER_CLICK, true);
+        appendApprentice(_jedi[_jedi.length-1].apprentice.url, true);
     }
     JediStore.emitChange();
 }
 
 function findLocalJedies(planet){
-    localJedi = null;
+    _localJedi = null;
     for(var i=0; i < _jedi.length; i++){
-        if(_jedi[i].homeworld.id == planet.id){
-            localJedi = _jedi[i].id;
+        if(_jedi[i] != null && _jedi[i].homeworld.id == planet.id){
+            if(_jedi.length == AppConstants.ROWS_AMOUNT){
+                _pendingRequestsCount = 0;
+                _activeRequest.abort();
+            }
+            _localJedi = _jedi[i].id;
             break;
         }
     }
@@ -91,8 +101,15 @@ var JediStore = assign({}, EventEmitter.prototype, {
         this.on(CHANGE_EVENT, callback);
     },
 
+    getDisabledBtns: function(){
+        return {
+            scrollUp: (_jedi[0] == null || _jedi[0].master.url == null),
+            scrollDown: (_jedi[_jedi.length-1] == null || _jedi[_jedi.length-1].master.url == null)
+        };
+    },
+
     getLocalJedi: function(){
-        return localJedi;
+        return _localJedi;
     },
 
     removeChangeListener: function(callback) {

@@ -8,18 +8,14 @@ var React = require('react');
 var JediMaster = require('./JediMaster.react');
 
 var JediList = React.createClass({
-
-    /**
-    * @return {object}
-    */
     render: function() {
 
         var storedJedies = this.props.storedJedies;
-        var localJedi    = this.props.localJedi;
+        var localJedi   = this.props.localJedi;
         var jediList = [];
 
         for (var key in storedJedies) {
-            jediList.push(<JediMaster key={key} isred={storedJedies[key].id == localJedi} jediMaster={storedJedies[key]} />);
+            jediList.push(<JediMaster key={key} isred={(storedJedies[key] != null)?storedJedies[key].id == localJedi:false} jediMaster={storedJedies[key]} />);
         }
 
         return (
