@@ -1,8 +1,8 @@
 {
-  "name": "flux-challenge-barabuba1",
+  "name": "flux-challenge-Vladimir-Voloshin",
   "version": "0.0.3",
   "description": "Voloshin Vladimir. Flux challenge.",
-  "repository": "https://github.com/barabuba1/flux-challenge",
+  "repository": "https://github.com/Vladimir-Voloshin/flux-challenge",
   "main": "js/bundle.js",
   "dependencies": {
     "classnames": "^2.1.3",
