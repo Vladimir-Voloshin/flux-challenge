@@ -1,0 +1,38 @@
+{
+  "name": "flux-challenge-Vladimir-Voloshin",
+  "version": "0.0.3",
+  "description": "Voloshin Vladimir. Flux challenge.",
+  "repository": "https://github.com/Vladimir-Voloshin/flux-challenge",
+  "main": "js/bundle.js",
+  "dependencies": {
+    "classnames": "^2.1.3",
+    "es6-promise": "~0.1.0",
+    "flux": "^2.0.1",
+    "object-assign": "^1.0.0",
+    "react": "^0.12.0",
+    "angular-websocket": "~1.0.14"
+  },
+  "devDependencies": {
+    "browserify": "^6.2.0",
+    "envify": "^3.0.0",
+    "jest-cli": "^0.4.3",
+    "reactify": "^0.15.2",
+    "uglify-js": "~2.4.15",
+    "watchify": "^2.1.1"
+  },
+  "scripts": {
+    "start": "watchify -o js/bundle.js -v -d js/app.js",
+    "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > js/bundle.min.js",
+    "test": "jest"
+  },
+  "author": "Voloshin Vladimir",
+  "browserify": {
+    "transform": [
+      "reactify",
+      "envify"
+    ]
+  },
+  "jest": {
+    "rootDir": "./js"
+  }
+}
