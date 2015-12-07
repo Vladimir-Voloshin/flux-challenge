@@ -9,8 +9,7 @@
     "es6-promise": "~0.1.0",
     "flux": "^2.0.1",
     "object-assign": "^1.0.0",
-    "react": "^0.12.0",
-    "angular-websocket": "~1.0.14"
+    "react": "^0.12.0"
   },
   "devDependencies": {
     "browserify": "^6.2.0",

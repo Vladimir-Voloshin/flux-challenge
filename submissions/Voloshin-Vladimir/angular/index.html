@@ -8,7 +8,7 @@
         <script src="bower_components/angular-websocket/angular-websocket.js"></script>
     </head>
     <body>
-        <div  class="app-container">
+        <div class="app-container" ng-app="mainSection" ng-controller="sithController">
             <div class="css-root">
                 <h1 class="css-planet-monitor">Obi-Wan currently on {{currentPlanet}}</h1>
                 <section class="css-scrollable-list">
@@ -41,8 +41,6 @@
                     </div>
                 </section>
             </div>
-        </div>
-
         <script src="js/bundle.js"></script>
     </body>
 </html>
