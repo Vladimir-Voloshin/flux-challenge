@@ -73,6 +73,7 @@ function appendMaster(jediMasterUrl, removeObsolete){
 }
 
 function scrollJediList(direction){
+    _pendingRequestsCount += AppConstants.SCROLL_PER_CLICK;
     if(direction){
         appendMaster(_jedi[0].master.url, true);
     }else{
