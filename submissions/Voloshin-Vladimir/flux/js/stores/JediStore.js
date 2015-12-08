@@ -16,14 +16,24 @@ var _activeRequest;
 var _jedi = [];
 var _localJedi;
 var _pendingRequestsCount;
+var _scrollDirection;
 
 function populateJediList(jediMaster) {
     _pendingRequestsCount = AppConstants.ROWS_AMOUNT % 2 ? Math.ceil(AppConstants.ROWS_AMOUNT / 2)-1 : Math.floor(AppConstants.ROWS_AMOUNT / 2)-1;
     _jedi.push(jediMaster);
-    appendMaster(jediMaster.master.url, false);
+    appendApprentice(jediMaster.apprentice.url, false);
 }
 
 function appendApprentice(jediMasterUrl, removeObsolete){
+    if(jediMasterUrl == null && _pendingRequestsCount-- > 1) {
+        for(var i=AppConstants.SCROLL_PER_CLICK; i != 0; i--){
+            _jedi.push(null);
+            _jedi.shift();
+            _pendingRequestsCount = 0;
+        }
+        return;
+    }
+
     _activeRequest = $.ajax({
         url: jediMasterUrl,
         dataType: 'json',
@@ -35,28 +45,6 @@ function appendApprentice(jediMasterUrl, removeObsolete){
             }
             if(_pendingRequestsCount-- > 1) {
                 appendApprentice(data.apprentice.url, removeObsolete);
-            }else{
-                JediStore.emitChange();
-            }
-        }.bind(this),
-        error: function(xhr, status, err) {
-            console.error(jediMasterUrl, status, err.toString());
-        }.bind(this)
-    });
-}
-
-function appendMaster(jediMasterUrl, removeObsolete){
-    _activeRequest = $.ajax({
-        url: jediMasterUrl,
-        dataType: 'json',
-        cache: false,
-        success: function(data) {
-            _jedi.unshift(data);
-            if(removeObsolete){
-                _jedi.pop();
-            }
-            if(_pendingRequestsCount-- > 1) {
-                appendMaster(data.master.url, removeObsolete);
             }else{
                 if(_jedi.length != AppConstants.ROWS_AMOUNT){
                     for(var i=AppConstants.ROWS_AMOUNT-_jedi.length; i != 0; i--){
@@ -72,11 +60,54 @@ function appendMaster(jediMasterUrl, removeObsolete){
     });
 }
 
+function appendMaster(jediMasterUrl, removeObsolete){
+    if(jediMasterUrl == null && _pendingRequestsCount-- > 1) {
+        for(var i=AppConstants.SCROLL_PER_CLICK; i != 0; i--){
+            _jedi.unshift(null);
+            _jedi.pop();
+            _pendingRequestsCount = 0;
+        }
+        return;
+    }
+
+    _activeRequest = $.ajax({
+        url: jediMasterUrl,
+        dataType: 'json',
+        cache: false,
+        success: function(data) {
+            _jedi.unshift(data);
+            if(removeObsolete){
+                _jedi.pop();
+            }
+            if(_pendingRequestsCount-- > 1) {
+                appendMaster(data.master.url, removeObsolete);
+            }else{
+                JediStore.emitChange();
+            }
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error(jediMasterUrl, status, err.toString());
+        }.bind(this)
+    });
+}
+
 function scrollJediList(direction){
     _pendingRequestsCount += AppConstants.SCROLL_PER_CLICK;
-    if(direction){
+
+    if(_pendingRequestsCount > AppConstants.SCROLL_PER_CLICK){
+        if(_scrollDirection != direction){
+            _activeRequest.abort();
+            _pendingRequestsCount = AppConstants.SCROLL_PER_CLICK;
+        }else{
+            return;
+        }
+    }
+
+    _scrollDirection = direction;
+
+    if(direction && _jedi[0] != null){
         appendMaster(_jedi[0].master.url, true);
-    }else{
+    }else if(_jedi[_jedi.length-1] != null){
         appendApprentice(_jedi[_jedi.length-1].apprentice.url, true);
     }
     JediStore.emitChange();
@@ -104,8 +135,8 @@ var JediStore = assign({}, EventEmitter.prototype, {
 
     getDisabledBtns: function(){
         return {
-            scrollUp: (_jedi[0] == null || _jedi[0].master.url == null),
-            scrollDown: (_jedi[_jedi.length-1] == null || _jedi[_jedi.length-1].master.url == null)
+            scrollUp: (_jedi[0] == null),
+            scrollDown: (_jedi[_jedi.length-1] == null)
         };
     },
 
