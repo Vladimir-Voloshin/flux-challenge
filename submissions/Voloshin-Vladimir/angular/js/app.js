@@ -100,6 +100,15 @@ app.run(function($rootScope) {
             return;
         }
         $rootScope._pendingRequestsCount += $rootScope.appConstants.SCROLL_PER_CLICK;
+        if($rootScope._pendingRequestsCount > $rootScope.appConstants.SCROLL_PER_CLICK){
+            if($rootScope.direction != direction){
+                $rootScope._activeRequest.abort();
+                $rootScope._pendingRequestsCount = $rootScope.appConstants.SCROLL_PER_CLICK;
+            }else{
+                return;
+            }
+        }
+        $rootScope.direction = direction;
         if(direction){
             $rootScope.appendMaster($rootScope._jedi[0].master.url, true);
         }else{
