@@ -58,6 +58,10 @@ body {
 	color: red;
 }
 
+.css-slot.empty h6{
+  display:none;
+}
+
 .css-slot h3, .css-slot h4, .css-slot h5, .css-slot h6 {
   margin: 0;
 }

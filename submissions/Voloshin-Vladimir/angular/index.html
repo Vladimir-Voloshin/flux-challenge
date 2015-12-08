@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <title>Vladimir Voloshin challenge</title>
         <link rel="stylesheet" href="static/styles.css">
+        <script src="bower_components/jquery/dist/jquery.js"></script>
         <script src="bower_components/angular/angular.js"></script>
         <script src="bower_components/angular-websocket/angular-websocket.js"></script>
     </head>
@@ -13,31 +14,17 @@
                 <h1 class="css-planet-monitor">Obi-Wan currently on {{currentPlanet}}</h1>
                 <section class="css-scrollable-list">
                     <ul class="css-slots">
-                        <li class="css-slot">
-                            <h3>Jorak Uln</h3>
-                            <h6>Homeworld: Korriban</h6>
-                        </li>
-                        <li class="css-slot">
-                            <h3>Skere Kaan</h3>
-                            <h6>Homeworld: Coruscant</h6>
-                        </li>
-                        <li class="css-slot">
-                            <h3>Na'daz</h3>
-                            <h6>Homeworld: Ryloth</h6>
-                        </li>
-                        <li class="css-slot">
-                            <h3>Kas'im</h3>
-                            <h6>Homeworld: Nal Hutta</h6>
-                        </li>
-                        <li class="css-slot">
-                            <h3>Darth Bane</h3>
-                            <h6>Homeworld: Apatros</h6>
+                        <li ng-repeat="jedi in _jedi"  class="css-slot{{jedi.style}}">
+                            <div ng-if="jedi.name != null">
+                                <h3>{{jedi.name}}</h3>
+                                <h6>Homeworld: {{jedi.homeworld.name}}</h6>
+                            </div>
                         </li>
                     </ul>
 
                     <div class="css-scroll-buttons">
-                        <button class="css-button-up"></button>
-                        <button class="css-button-down"></button>
+                        <button class="css-button-up{{disableScrollUp}}" ng-click="setImage(img)"></button>
+                        <button class="css-button-down{{disableScrollDown}}" ng-click="setImage(img)"></button>
                     </div>
                 </section>
             </div>
