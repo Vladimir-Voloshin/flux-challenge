@@ -4,11 +4,6 @@
  * Date: 2015.12.02
  * Time: 11:11
  */
-//var _jedi = [];
-//var _activeRequest = 1;
-//var _jedi = [];
-//var _localJedi;
-//var _pendingRequestsCount;
 
 var app = angular
     .module('mainSection', [
@@ -58,10 +53,10 @@ var app = angular
             }
             if(this.scope._jedi.length == this.scope.appConstants.ROWS_AMOUNT){
                 this.scope.disableScrollUp = this.scope.disableScrollDown = '';
-                if(this.scope._jedi[0].name != null){
+                if(this.scope._jedi[this.scope._jedi.length-1].apprentice === undefined){
                     this.scope.disableScrollDown = ' css-button-disabled';
                 }
-                if(this.scope._jedi[this.scope._jedi.length-1].name != null){
+                if(this.scope._jedi[0].master === undefined){
                     this.scope.disableScrollUp = ' css-button-disabled';
                 }
             }
@@ -97,19 +92,67 @@ app.run(function($rootScope) {
     $rootScope.populateJediList = function(jediMaster) {
         $rootScope._pendingRequestsCount = $rootScope.appConstants.ROWS_AMOUNT % 2 ? Math.ceil($rootScope.appConstants.ROWS_AMOUNT / 2)-1 : Math.floor($rootScope.appConstants.ROWS_AMOUNT / 2)-1;
         $rootScope._jedi.push(jediMaster);
-        $rootScope.appendMaster(jediMaster.master.url, false);
+        $rootScope.appendApprentice(jediMaster.apprentice.url, false);
     };
 
     $rootScope.scrollJediList = function(direction){
+        if(($rootScope.disableScrollUp != '' && direction) || ($rootScope.disableScrollDown != '' && !direction)){
+            return;
+        }
         $rootScope._pendingRequestsCount += $rootScope.appConstants.SCROLL_PER_CLICK;
         if(direction){
-            appendMaster(_jedi[0].master.url, true);
+            $rootScope.appendMaster($rootScope._jedi[0].master.url, true);
         }else{
-            appendApprentice(_jedi[_jedi.length-1].apprentice.url, true);
+            $rootScope.appendApprentice($rootScope._jedi[$rootScope._jedi.length-1].apprentice.url, true);
         }
     }
 
+    $rootScope.appendApprentice = function(jediMasterUrl, removeObsolete){
+        if(jediMasterUrl == null && $rootScope._pendingRequestsCount-- > 1) {
+            for(var i=$rootScope.appConstants.SCROLL_PER_CLICK; i != 0; i--){
+                $rootScope._jedi.push({homeworld:i, name: null});
+                $rootScope._jedi.shift();
+                $rootScope._pendingRequestsCount = 0;
+            }
+            $rootScope.disableScrollDown = ' css-button-disabled';
+            return;
+        }
+        $rootScope._activeRequest = $.ajax({
+            url: jediMasterUrl,
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                $rootScope._jedi.push(data);
+                if(removeObsolete){
+                    $rootScope._jedi.shift();
+                }
+                if($rootScope._pendingRequestsCount-- > 1) {
+                    $rootScope.appendApprentice(data.apprentice.url, removeObsolete);
+                }else{
+                    if($rootScope._jedi.length != $rootScope.appConstants.ROWS_AMOUNT){
+                        for(var i=$rootScope.appConstants.ROWS_AMOUNT-$rootScope._jedi.length; i != 0; i--){
+                            $rootScope._jedi.push({homeworld:i, name: null});
+                        }
+                        $rootScope.disableScrollDown = ' css-button-disabled';
+                    }
+                }
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(jediMasterUrl, status, err.toString());
+            }.bind(this)
+        });
+    }
+
     $rootScope.appendMaster = function(jediMasterUrl, removeObsolete){
+        if(jediMasterUrl == null && $rootScope._pendingRequestsCount-- > 1) {
+            for(var i=$rootScope.appConstants.SCROLL_PER_CLICK; i != 0; i--){
+                $rootScope._jedi.unshift({homeworld:i, name: null});
+                $rootScope._jedi.pop();
+                $rootScope._pendingRequestsCount = 0;
+            }
+            $rootScope.disableScrollDown = ' css-button-disabled';
+            return;
+        }
         $rootScope._activeRequest = $.ajax({
             url: jediMasterUrl,
             dataType: 'json',
@@ -121,15 +164,6 @@ app.run(function($rootScope) {
                 }
                 if($rootScope._pendingRequestsCount-- > 1) {
                     $rootScope.appendMaster(data.master.url, removeObsolete);
-                }else{
-                    if($rootScope._jedi.length != $rootScope.appConstants.ROWS_AMOUNT){
-                        console.log(105);
-                        for(var i=$rootScope.appConstants.ROWS_AMOUNT-$rootScope._jedi.length; i != 0; i--){
-                            $rootScope._jedi.push({homeworld:i, name: null});
-                        }
-                        console.log(109);
-                        $rootScope.disableScrollDown = ' css-button-disabled';
-                    }
                 }
             }.bind(this),
             error: function(xhr, status, err) {
@@ -138,69 +172,3 @@ app.run(function($rootScope) {
         });
     };
 });
-
-
-
-
-//
-//var app = angular
-//    .module('mainSection', [
-//        'ngWebSocket'
-//    ])
-//    .factory('planetData', function($websocket) {
-//        var dataStream = $websocket('ws://localhost:4000');
-//        var collection = [];
-//
-//        dataStream.onMessage(function(message) {
-//            collection.push(JSON.parse(message.data));
-//        });
-//
-//        dataStream.onMessage(function(message) {
-//            console.log(36);
-//            var planetData = JSON.parse(message.data)
-//            this.scope.currentPlanet = planetData.name;
-//            //findLocalJedies(planetData);
-//        });
-//
-//        function scrollJediList(direction){
-//            if(direction){
-//                appendMaster(_jedi[0].master.url, true);
-//            }else{
-//                appendApprentice(_jedi[_jedi.length-1].apprentice.url, true);
-//            }
-//            //JediStore.emitChange();
-//        }
-//
-//        function findLocalJedies(planet){
-//            _localJedi = null;
-//            for(var i=0; i < _jedi.length; i++){
-//                if(_jedi[i] != null && _jedi[i].homeworld.id == planet.id){
-//                    if(_jedi.length == AppConstants.ROWS_AMOUNT){
-//                        _pendingRequestsCount = 0;
-//                        _activeRequest.abort();
-//                    }
-//                    _localJedi = _jedi[i].id;
-//                    break;
-//                }
-//            }
-//            //JediStore.emitChange();
-//        }
-//
-
-//
-//        var methods = {
-//            collection: collection,
-//            get: function() {
-//                dataStream.send(JSON.stringify({ action: 'get' }));
-//            }
-//        };
-//
-//        return methods;
-//    })
-//    .controller('sithController', function ($scope, planetData) {
-//        $scope.planetData = planetData;
-//        $http.get(appConstants.BASE_URL + appConstants.INITIAL_ID)
-//            .then(function(response) {
-//                //populateJediList(response.data);
-//            });
-//    });
