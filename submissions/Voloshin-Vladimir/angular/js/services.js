@@ -17,7 +17,7 @@ jediPlanetServices.factory('Planet', ['$websocket',
         dataStream.onMessage(function(message) {
             var planetData = JSON.parse(message.data);
             this.scope.currentPlanet = planetData.name;
-            console.log(Common);
+
             if(this.scope._jedi !== undefined){
                 this.scope._localJedi = false;
                 for(var i=0; i < this.scope._jedi.length; i++){
