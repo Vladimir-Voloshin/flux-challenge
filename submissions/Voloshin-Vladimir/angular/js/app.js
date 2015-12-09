@@ -8,7 +8,8 @@
 var app = angular
     .module('mainSection', [
         'ngWebSocket',
-        'jediControllers'
+        'jediControllers',
+        'jediPlanetServices'
     ]).constant("appConstants", {
         "BASE_URL":             'http://localhost:3000/dark-jedis/',
         "INITIAL_ID":           3616,
@@ -18,58 +19,6 @@ var app = angular
         "JEDI_SCROLLDOWN":      3,
         "ROWS_AMOUNT":          5,
         "SCROLL_PER_CLICK":     2
-    }).factory('planetData', function($websocket) {
-        var dataStream = $websocket('ws://localhost:4000');
-        var collection = [];
-
-        dataStream.onMessage(function(message) {
-            collection.push(JSON.parse(message.data));
-        });
-
-        dataStream.onMessage(function(message) {
-            var planetData = JSON.parse(message.data);
-            this.scope.currentPlanet = planetData.name;
-
-            if(this.scope._jedi !== undefined){
-                this.scope._localJedi = false;
-                for(var i=0; i < this.scope._jedi.length; i++){
-                    if(this.scope._jedi[i].homeworld.id == planetData.id){
-                        if(this.scope._jedi.length == this.scope.appConstants.ROWS_AMOUNT){
-                            this.scope._pendingRequestsCount = 0;
-                            if(this.scope._activeRequest !== undefined && this.scope._activeRequest != null){
-                                this.scope._activeRequest.abort();
-                            }
-                            this.scope._jedi[i].style  = ' red';
-                            this.scope.disableScrollUp = this.scope.disableScrollDown = ' css-button-disabled';
-                            this.scope._localJedi = true;
-                        }
-                    }else{
-                        this.scope._jedi[i].style = '';
-                    }
-                }
-                if(this.scope._localJedi){
-                    return;
-                }
-            }
-            if(this.scope._jedi.length == this.scope.appConstants.ROWS_AMOUNT){
-                this.scope.disableScrollUp = this.scope.disableScrollDown = '';
-                if(this.scope._jedi[this.scope._jedi.length-1].apprentice === undefined){
-                    this.scope.disableScrollDown = ' css-button-disabled';
-                }
-                if(this.scope._jedi[0].master === undefined){
-                    this.scope.disableScrollUp = ' css-button-disabled';
-                }
-            }
-        });
-
-        var methods = {
-            collection: collection,
-            get: function() {
-                dataStream.send(JSON.stringify({ action: 'get' }));
-            }
-        };
-
-        return methods;
     });
 
 app.run(function($rootScope) {
