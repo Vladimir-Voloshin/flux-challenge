@@ -16,7 +16,7 @@
         "watchify": "^2.1.1"
     },
     "scripts": {
-        "start": "watchify -o js/bundle.js -v -d js/app.js js/currentPlanet.js js/controllers.js js/constants.js js/jediStore.js",
+        "start": "watchify -o js/bundle.js -v -d js/app.js js/currentPlanetService.js js/controllers.js js/constants.js js/jediStore.js",
         "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > js/bundle.min.js",
         "test": "jest"
     },
