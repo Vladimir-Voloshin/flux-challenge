@@ -8,7 +8,7 @@
  */
 
 angular.module("mainSection")
-    .factory('currentPlanet', ['$q', '$rootScope', '$websocket', 'appConstants', 'jediStore', function ($q, $scope, $websocket, constants, jediStore) {
+    .factory('currentPlanetService', ['$q', '$rootScope', '$websocket', 'appConstants', 'jediStore', function ($q, $scope, $websocket, constants, jediStore) {
         var dataStream = $websocket('ws://localhost:4000');
         var collection = [];
 
