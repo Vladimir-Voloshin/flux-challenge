@@ -1,13 +1,11 @@
 {
-  "name": "flux-challenge",
-  "description": "Voloshin Vladimir. Flux challenge.",
-  "version": "0.0.1",
-  "homepage": "https://github.com/Vladimir-Voloshin/flux-challenge",
-  "dependencies": {
-    "angular": "~1.4.0",
-    "angular-route": "~1.4.0",
-    "angular-loader": "~1.4.0",
-    "angular-mocks": "~1.4.0",
-    "angular-websocket": "~1.0.14"
-  }
+    "name": "flux-challenge",
+    "description": "Voloshin Vladimir. Flux challenge.",
+    "version": "0.0.1",
+    "homepage": "https://github.com/Vladimir-Voloshin/flux-challenge",
+    "dependencies": {
+        "angular": "~1.4.0",
+        "angular-resource": "~1.4.0",
+        "angular-websocket": "~1.0.14"
+    }
 }
