@@ -61,7 +61,7 @@ angular.module("mainSection")
                         jediStore._jedi.pop();
                         jediStore._pendingRequestsCount = 0;
                     }
-                    $scope.disableScrollDown = ' css-button-disabled';
+                    $scope.disableScrollUp = ' css-button-disabled';
                     return;
                 }
                 jediStore._activeRequest = $http.get(jediMasterUrl, {timeout: jediStore._canceller.promise})

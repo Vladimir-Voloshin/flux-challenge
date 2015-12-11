@@ -8,7 +8,7 @@
  */
 
 angular.module("mainSection")
-    .factory('currentPlanet', ['$q', '$websocket', 'appConstants', 'jediStore', function ($q, $websocket, constants, jediStore) {
+    .factory('currentPlanet', ['$q', '$rootScope', '$websocket', 'appConstants', 'jediStore', function ($q, $scope, $websocket, constants, jediStore) {
         var dataStream = $websocket('ws://localhost:4000');
         var collection = [];
 
@@ -27,7 +27,7 @@ angular.module("mainSection")
                                 jediStore._canceller = $q.defer();
                             }
                             jediStore._jedi[i].style = ' red';
-                            jediStore.disableScrollUp = jediStore.disableScrollDown = ' css-button-disabled';
+                            $scope.disableScrollUp = $scope.disableScrollDown = ' css-button-disabled';
                             jediStore._localJedi = true;
                         }
                     } else {
@@ -39,12 +39,12 @@ angular.module("mainSection")
                 }
             }
             if (jediStore._jedi.length == constants.ROWS_AMOUNT) {
-                jediStore.disableScrollUp = jediStore.disableScrollDown = '';
+                $scope.disableScrollUp = $scope.disableScrollDown = '';
                 if (jediStore._jedi[jediStore._jedi.length - 1].apprentice === undefined) {
-                    jediStore.disableScrollDown = ' css-button-disabled';
+                    $scope.disableScrollDown = ' css-button-disabled';
                 }
                 if (jediStore._jedi[0].master === undefined) {
-                    jediStore.disableScrollUp = ' css-button-disabled';
+                    $scope.disableScrollUp = ' css-button-disabled';
                 }
             }
         });
