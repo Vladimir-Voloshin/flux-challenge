@@ -8,7 +8,7 @@
  */
 
 angular.module('mainSection')
-    .controller('sithController', ['$rootScope', '$http', 'appConstants', 'Common', function ($scope, $http, appConstants, $common) {
+    .controller('sithController', ['$rootScope', '$http', 'appConstants', 'Common', 'Planet', function ($scope, $http, appConstants, $common, planet) {
     $http.get(appConstants.BASE_URL + appConstants.INITIAL_ID)
         .then(function(response) {
             $common.populateJediList(response.data);

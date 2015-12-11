@@ -9,8 +9,8 @@
 
 var jediPlanetServices = angular.module('jediPlanetServices', ['ngWebSocket']);
 
-jediPlanetServices
-    .factory('Planet', ['$websocket', function ($websocket) {
+angular.module("mainSection")
+    .factory('Planet', ['$websocket', 'appConstants', function ($websocket, constants) {
         var dataStream = $websocket('ws://localhost:4000');
         var collection = [];
 
@@ -22,7 +22,7 @@ jediPlanetServices
                 this.scope._localJedi = false;
                 for (var i = 0; i < this.scope._jedi.length; i++) {
                     if (this.scope._jedi[i].homeworld.id == planetData.id) {
-                        if (this.scope._jedi.length == this.scope.appConstants.ROWS_AMOUNT) {
+                        if (this.scope._jedi.length == constants.ROWS_AMOUNT) {
                             this.scope._pendingRequestsCount = 0;
                             if (this.scope._activeRequest !== undefined && this.scope._activeRequest != null) {
                                 this.scope._activeRequest.abort();
@@ -39,7 +39,7 @@ jediPlanetServices
                     return;
                 }
             }
-            if (this.scope._jedi.length == this.scope.appConstants.ROWS_AMOUNT) {
+            if (this.scope._jedi.length == constants.ROWS_AMOUNT) {
                 this.scope.disableScrollUp = this.scope.disableScrollDown = '';
                 if (this.scope._jedi[this.scope._jedi.length - 1].apprentice === undefined) {
                     this.scope.disableScrollDown = ' css-button-disabled';
@@ -59,6 +59,8 @@ jediPlanetServices
 
         return methods;
     }])
+
+jediPlanetServices
     .factory('Common', ['$rootScope', '$http', 'appConstants', function ($scope, $http, constants) {
         var jediStore = {
 
