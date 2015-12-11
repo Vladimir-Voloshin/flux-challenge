@@ -7,8 +7,7 @@
 
 var app = angular
     .module('mainSection', [
-        'ngWebSocket',
-        'jediPlanetServices'
+        'ngWebSocket'
     ]);
 
 app.run(function($rootScope) {
