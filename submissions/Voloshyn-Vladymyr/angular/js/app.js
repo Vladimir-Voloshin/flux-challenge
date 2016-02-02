@@ -1,6 +1,6 @@
 'use strict';
 /**
- * User: Voloshin Vladimir
+ * User: Voloshyn Vladymyr
  * Date: 2015.12.02
  * Time: 11:11
  */
@@ -37,7 +37,7 @@ var app = angular
                         if(this.scope._jedi.length == this.scope.appConstants.ROWS_AMOUNT){
                             this.scope._pendingRequestsCount = 0;
                             if(this.scope._activeRequest !== undefined && this.scope._activeRequest != null){
-                                this.scope._activeRequest.abort();
+                                this.scope._canceller.resolve();
                             }
                             this.scope._jedi[i].style  = ' red';
                             this.scope.disableScrollUp = this.scope.disableScrollDown = ' css-button-disabled';
@@ -72,7 +72,7 @@ var app = angular
         return methods;
     });
 
-app.run(function($rootScope) {
+app.run(function($rootScope, $http, $q) {
     $rootScope.appConstants = {
         "BASE_URL":             'http://localhost:3000/dark-jedis/',
         "INITIAL_ID":           3616,
@@ -88,6 +88,7 @@ app.run(function($rootScope) {
     $rootScope._activeRequest;
     $rootScope._localJedi = 1;
     $rootScope._pendingRequestsCount;
+    $rootScope._canceller = $q.defer();
 
     $rootScope.populateJediList = function(jediMaster) {
         $rootScope._pendingRequestsCount = $rootScope.appConstants.ROWS_AMOUNT % 2 ? Math.ceil($rootScope.appConstants.ROWS_AMOUNT / 2)-1 : Math.floor($rootScope.appConstants.ROWS_AMOUNT / 2)-1;
@@ -102,7 +103,7 @@ app.run(function($rootScope) {
         $rootScope._pendingRequestsCount += $rootScope.appConstants.SCROLL_PER_CLICK;
         if($rootScope._pendingRequestsCount > $rootScope.appConstants.SCROLL_PER_CLICK){
             if($rootScope.direction != direction){
-                $rootScope._activeRequest.abort();
+                $rootScope._canceller.resolve();
                 $rootScope._pendingRequestsCount = $rootScope.appConstants.SCROLL_PER_CLICK;
             }else{
                 return;
@@ -126,30 +127,28 @@ app.run(function($rootScope) {
             $rootScope.disableScrollDown = ' css-button-disabled';
             return;
         }
-        $rootScope._activeRequest = $.ajax({
-            url: jediMasterUrl,
-            dataType: 'json',
+
+        $rootScope._activeRequest = $http({
             cache: false,
-            success: function(data) {
-                $rootScope._jedi.push(data);
-                if(removeObsolete){
-                    $rootScope._jedi.shift();
-                }
-                if($rootScope._pendingRequestsCount-- > 1) {
-                    $rootScope.appendApprentice(data.apprentice.url, removeObsolete);
-                }else{
-                    if($rootScope._jedi.length != $rootScope.appConstants.ROWS_AMOUNT){
-                        for(var i=$rootScope.appConstants.ROWS_AMOUNT-$rootScope._jedi.length; i != 0; i--){
-                            $rootScope._jedi.push({homeworld:i, name: null});
-                        }
-                        $rootScope.disableScrollDown = ' css-button-disabled';
+            method: 'GET',
+            timeout: $rootScope._cenceller,
+            url: jediMasterUrl
+        }).then(function (responce) {
+            $rootScope._jedi.push(responce.data);
+            if(removeObsolete){
+                $rootScope._jedi.shift();
+            }
+            if($rootScope._pendingRequestsCount-- > 1) {
+                $rootScope.appendApprentice(responce.data.apprentice.url, removeObsolete);
+            }else{
+                if($rootScope._jedi.length != $rootScope.appConstants.ROWS_AMOUNT){
+                    for(var i=$rootScope.appConstants.ROWS_AMOUNT-$rootScope._jedi.length; i != 0; i--){
+                        $rootScope._jedi.push({homeworld:i, name: null});
                     }
+                    $rootScope.disableScrollDown = ' css-button-disabled';
                 }
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(jediMasterUrl, status, err.toString());
-            }.bind(this)
-        });
+            }
+        })
     }
 
     $rootScope.appendMaster = function(jediMasterUrl, removeObsolete){
@@ -162,22 +161,20 @@ app.run(function($rootScope) {
             $rootScope.disableScrollDown = ' css-button-disabled';
             return;
         }
-        $rootScope._activeRequest = $.ajax({
-            url: jediMasterUrl,
-            dataType: 'json',
+
+        $rootScope._activeRequest = $http({
             cache: false,
-            success: function(data) {
-                $rootScope._jedi.unshift(data);
-                if(removeObsolete){
-                    $rootScope._jedi.pop();
-                }
-                if($rootScope._pendingRequestsCount-- > 1) {
-                    $rootScope.appendMaster(data.master.url, removeObsolete);
-                }
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(jediMasterUrl, status, err.toString());
-            }.bind(this)
-        });
+            method: 'GET',
+            timeout: $rootScope._cenceller,
+            url: jediMasterUrl
+        }).then(function (responce) {
+            $rootScope._jedi.unshift(responce.data);
+            if(removeObsolete){
+                $rootScope._jedi.pop();
+            }
+            if($rootScope._pendingRequestsCount-- > 1) {
+                $rootScope.appendMaster(responce.data.master.url, removeObsolete);
+            }
+        })
     };
 });

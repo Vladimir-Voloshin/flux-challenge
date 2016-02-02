@@ -1,5 +1,5 @@
 /**
-* User: Voloshin Vladimir
+* User: Voloshyn Vladymyr
 * Date: 2015.11.19
 * Time: 11:11
 */

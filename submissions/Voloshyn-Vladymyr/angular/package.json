@@ -1,7 +1,7 @@
 {
   "name": "flux-challenge-Vladimir-Voloshin",
   "version": "0.0.3",
-  "description": "Voloshin Vladimir. Flux challenge.",
+  "description": "Voloshyn Vladymyr. Flux challenge.",
   "repository": "https://github.com/Vladimir-Voloshin/flux-challenge",
   "main": "js/bundle.js",
   "dependencies": {
@@ -24,7 +24,7 @@
     "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > js/bundle.min.js",
     "test": "jest"
   },
-  "author": "Voloshin Vladimir",
+  "author": "Voloshyn Vladymyr",
   "browserify": {
     "transform": [
       "reactify",

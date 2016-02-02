@@ -1,5 +1,5 @@
 /**
-* User: Voloshin Vladimir
+* User: Voloshyn Vladymyr
 * Date: 2015.11.25
 * Time: 11:11
 */
@@ -11,7 +11,7 @@ var JediList = React.createClass({
     render: function() {
 
         var storedJedies = this.props.storedJedies;
-        var localJedi   = this.props.localJedi;
+        var localJedi    = this.props.localJedi;
         var jediList = [];
 
         for (var key in storedJedies) {
@@ -23,7 +23,7 @@ var JediList = React.createClass({
                 {jediList}
             </ul>
         );
-    },
+    }
 });
 
 module.exports = JediList;

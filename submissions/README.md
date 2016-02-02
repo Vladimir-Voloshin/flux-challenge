@@ -2,29 +2,8 @@
 
 Submitter | Libraries
 --- | ---
-[abaran](abaran)             | [React], [Reflux]
-[arqex](arqex)               | [React], [Freezer]
-[ds300](ds300)               | [DDOM], [Derivable], [Immutable], [Redux], [TypeScript]
-[fab1an](fab1an)             | [React], [Redux]
-[hyperturtle](hyperturtle)   | [React], [Redux]
-[jas-chen](jas-chen)         | [React], [Redux], [RxJS], [thisless-react]
-[jelz](jelz)                 | [ClojureScript], [re-frame]
-[jollytoad](jollytoad)       | [jQuery], [Fluxlet]
-[josepot](josepot)           | [React], [Redux]
-[garbles](garbles)           | [Yolk]
-[kyldvs](kyldvs)             | [React], [Flux], [Immutable], [Flow]
-[leoasis](leoasis)           | [React], [Redux]
-[masiulis](masiulis)         | [React], no Flux
-[mattjbray](mattjbray)       | [Elm]
-[milankinen](milankinen)     | [React], [Baconjs]
-[mynomoto](mynomoto)         | [ClojureScript], [Hoplon]
-[pasieronen](pasieronen)     | [React], [Baconjs]
-[pindia](pindia)             | [React], [Reflux]
-[retozi](retozi)             | [React], [Flux], [TypeScript]
-[salsita](salsita)           | [React], [Redux], [Immutable]
-[staltz](staltz)             | [Cycle], [RxJS], [Immutable]
-[stinson7](stinson7)         | None
-[winstonewert](winstonewert) | [React], [Redux]
+[Voloshyn Vladymyr]   | [AngularJS]
+[Voloshyn Vladymyr]   | [React], [Reflux]
 
 [Baconjs]: https://baconjs.github.io/
 [ClojureScript]: https://github.com/clojure/clojurescript

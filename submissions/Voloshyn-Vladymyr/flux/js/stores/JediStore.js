@@ -1,5 +1,5 @@
 /**
-* User: Voloshin Vladimir
+* User: Voloshyn Vladymyr
 * Date: 2015.11.19
 * Time: 11:11
 */
@@ -135,8 +135,8 @@ var JediStore = assign({}, EventEmitter.prototype, {
 
     getDisabledBtns: function(){
         return {
-            scrollUp: (_jedi[0] == null),
-            scrollDown: (_jedi[_jedi.length-1] == null)
+            scrollUp: ((_jedi[0] == null) || (_localJedi != null)),
+            scrollDown: ((_jedi[_jedi.length-1] == null) || (_localJedi != null))
         };
     },
 
