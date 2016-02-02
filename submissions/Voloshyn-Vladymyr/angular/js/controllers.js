@@ -7,12 +7,17 @@
  * Time: 11:11
  */
 
-var jediControllers = angular.module('jediControllers', []);
-
-jediControllers.controller('sithController', ['$scope', '$http', 'appConstants', 'planetData', function ($scope, $http, appConstants, planetData) {
-    $scope.planetData = planetData;
+angular.module("mainSection")
+    .controller('sithController', ['$rootScope', '$http', 'appConstants', 'jediStore', 'currentPlanetService', function ($scope, $http, appConstants, jediStore, currentPlanet) {
     $http.get(appConstants.BASE_URL + appConstants.INITIAL_ID)
         .then(function(response) {
-            $scope.populateJediList(response.data);
+            jediStore.populateJediList(response.data);
         });
+
+        $scope.scrollJediList = function(direction){
+            if(($scope.disableScrollUp != '' && direction) || ($scope.disableScrollDown != '' && !direction)){
+                return;
+            }
+            jediStore.scrollJediList(direction);
+        }
 }]);
