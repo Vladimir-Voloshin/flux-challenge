@@ -9,6 +9,13 @@ var AppConstants = require('../constants/AppConstants');
 
 var JediActions = {
 
+    handleError: function(error) {
+        AppDispatcher.dispatch({
+            actionType: AppConstants.JEDI_REQUEST_ERROR,
+            error: error
+        });
+    },
+
     moveToPlanet: function(data) {
         AppDispatcher.dispatch({
             actionType: AppConstants.JEDI_MOVED_TO_PLANET,

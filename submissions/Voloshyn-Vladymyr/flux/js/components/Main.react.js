@@ -5,11 +5,11 @@
 */
 
 var React = require('react');
-var $ = require('jquery');
+var request = require('superagent');
 var JediActions = require('../actions/JediActions');
 var Footer = require('./Footer.react');
 var JediList = require('./JediList.react');
-var Constants = require('../constants/AppConstants');
+var AppConstants = require('../constants/AppConstants');
 var JediStore = require('../stores/JediStore');
 
 function getJediesState() {
@@ -23,22 +23,17 @@ function getJediesState() {
 var Main = React.createClass({
 
     getInitialState: function() {
-        $.ajax({
-            url: Constants.BASE_URL + Constants.INITIAL_ID,
-            dataType: 'json',
-            cache: false,
-            success: function(data) {
-                JediActions.populateJediList({data: data});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(Constants.baseUrl + Constants.initialId, status, err.toString());
-            }.bind(this)
-        });
+        request.get(AppConstants.BASE_URL + AppConstants.INITIAL_ID)
+            .set(AppConstants.HEADERS)
+            .end(
+                function(error, data) {
+                    JediActions.populateJediList({data: data.body});
+                }
+            );
         return getJediesState();
     },
 
     componentDidMount: function() {
-
         JediStore.addChangeListener(this._onChange);
     },
 

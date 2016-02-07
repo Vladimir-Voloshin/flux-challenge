@@ -5,7 +5,7 @@
 */
 
 var AppDispatcher = require('../dispatcher/AppDispatcher');
-var $ = require('jquery');
+var request = require('superagent');
 var AppConstants = require('../constants/AppConstants');
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
@@ -34,30 +34,26 @@ function appendApprentice(jediMasterUrl, removeObsolete){
         return;
     }
 
-    _activeRequest = $.ajax({
-        url: jediMasterUrl,
-        dataType: 'json',
-        cache: false,
-        success: function(data) {
-            _jedi.push(data);
-            if(removeObsolete){
-                _jedi.shift();
-            }
-            if(_pendingRequestsCount-- > 1) {
-                appendApprentice(data.apprentice.url, removeObsolete);
-            }else{
-                if(_jedi.length != AppConstants.ROWS_AMOUNT){
-                    for(var i=AppConstants.ROWS_AMOUNT-_jedi.length; i != 0; i--){
-                        _jedi.push(null);
-                    }
+    _activeRequest = request.get(jediMasterUrl)
+        .set(AppConstants.HEADERS)
+        .end(
+            function(error, data) {
+                _jedi.push(data.body);
+                if(removeObsolete){
+                    _jedi.shift();
                 }
-                JediStore.emitChange();
+                if(_pendingRequestsCount-- > 1) {
+                    appendApprentice(data.body.apprentice.url, removeObsolete);
+                }else{
+                    if(_jedi.length != AppConstants.ROWS_AMOUNT){
+                        for(var i=AppConstants.ROWS_AMOUNT-_jedi.length; i != 0; i--){
+                            _jedi.push(null);
+                        }
+                    }
+                    JediStore.emitChange();
+                }
             }
-        }.bind(this),
-        error: function(xhr, status, err) {
-            console.error(jediMasterUrl, status, err.toString());
-        }.bind(this)
-    });
+        );
 }
 
 function appendMaster(jediMasterUrl, removeObsolete){
@@ -70,25 +66,21 @@ function appendMaster(jediMasterUrl, removeObsolete){
         return;
     }
 
-    _activeRequest = $.ajax({
-        url: jediMasterUrl,
-        dataType: 'json',
-        cache: false,
-        success: function(data) {
-            _jedi.unshift(data);
-            if(removeObsolete){
-                _jedi.pop();
+    _activeRequest = request.get(jediMasterUrl)
+        .set(AppConstants.HEADERS)
+        .end(
+            function(error, data) {
+                _jedi.unshift(data.body);
+                if(removeObsolete){
+                    _jedi.pop();
+                }
+                if(_pendingRequestsCount-- > 1) {
+                    appendMaster(data.body.master.url, removeObsolete);
+                }else{
+                    JediStore.emitChange();
+                }
             }
-            if(_pendingRequestsCount-- > 1) {
-                appendMaster(data.master.url, removeObsolete);
-            }else{
-                JediStore.emitChange();
-            }
-        }.bind(this),
-        error: function(xhr, status, err) {
-            console.error(jediMasterUrl, status, err.toString());
-        }.bind(this)
-    });
+        );
 }
 
 function scrollJediList(direction){
@@ -126,6 +118,10 @@ function findLocalJedies(planet){
         }
     }
     JediStore.emitChange();
+}
+
+function handleError(error){
+    console.log(error);
 }
 
 var JediStore = assign({}, EventEmitter.prototype, {
@@ -172,6 +168,9 @@ AppDispatcher.register(function(action) {
             break;
         case AppConstants.JEDI_MOVED_TO_PLANET:
             findLocalJedies(action.currentPlanet);
+            break;
+        case AppConstants.JEDI_REQUEST_ERROR:
+            handleError(action.error);
             break;
         default:
             // no op

@@ -3,4 +3,3 @@ bower_components/
 ignore/
 npm-debug.log
 .idea
-/**/bundle.js
