@@ -25,7 +25,7 @@ function populateJediList(jediMaster) {
 }
 
 function appendApprentice(jediMasterUrl, removeObsolete){
-    if(jediMasterUrl == null && _pendingRequestsCount-- > 1) {
+    if(jediMasterUrl === null && _pendingRequestsCount-- > 1) {
         for(var i=AppConstants.SCROLL_PER_CLICK; i != 0; i--){
             _jedi.push(null);
             _jedi.shift();
@@ -39,7 +39,7 @@ function appendApprentice(jediMasterUrl, removeObsolete){
         .end(
             function(error, data) {
                 _jedi.push(data.body);
-                if(removeObsolete){
+                if(removeObsolete === true){
                     _jedi.shift();
                 }
                 if(_pendingRequestsCount-- > 1) {
@@ -57,7 +57,7 @@ function appendApprentice(jediMasterUrl, removeObsolete){
 }
 
 function appendMaster(jediMasterUrl, removeObsolete){
-    if(jediMasterUrl == null && _pendingRequestsCount-- > 1) {
+    if(jediMasterUrl === null && _pendingRequestsCount-- > 1) {
         for(var i=AppConstants.SCROLL_PER_CLICK; i != 0; i--){
             _jedi.unshift(null);
             _jedi.pop();
@@ -71,7 +71,7 @@ function appendMaster(jediMasterUrl, removeObsolete){
         .end(
             function(error, data) {
                 _jedi.unshift(data.body);
-                if(removeObsolete){
+                if(removeObsolete === true){
                     _jedi.pop();
                 }
                 if(_pendingRequestsCount-- > 1) {
@@ -87,7 +87,7 @@ function scrollJediList(direction){
     _pendingRequestsCount += AppConstants.SCROLL_PER_CLICK;
 
     if(_pendingRequestsCount > AppConstants.SCROLL_PER_CLICK){
-        if(_scrollDirection != direction){
+        if(_scrollDirection !== direction){
             _activeRequest.abort();
             _pendingRequestsCount = AppConstants.SCROLL_PER_CLICK;
         }else{
@@ -97,9 +97,9 @@ function scrollJediList(direction){
 
     _scrollDirection = direction;
 
-    if(direction && _jedi[0] != null){
+    if(direction && _jedi[0] !== null){
         appendMaster(_jedi[0].master.url, true);
-    }else if(_jedi[_jedi.length-1] != null){
+    }else if(_jedi[_jedi.length-1] !== null){
         appendApprentice(_jedi[_jedi.length-1].apprentice.url, true);
     }
     JediStore.emitChange();
@@ -108,7 +108,7 @@ function scrollJediList(direction){
 function findLocalJedies(planet){
     _localJedi = null;
     for(var i=0; i < _jedi.length; i++){
-        if(_jedi[i] != null && _jedi[i].homeworld.id == planet.id){
+        if(_jedi[i] !== null && _jedi[i].homeworld.id === planet.id){
             if(_jedi.length == AppConstants.ROWS_AMOUNT){
                 _pendingRequestsCount = 0;
                 _activeRequest.abort();
@@ -131,8 +131,8 @@ var JediStore = assign({}, EventEmitter.prototype, {
 
     getDisabledBtns: function(){
         return {
-            scrollUp: ((_jedi[0] == null) || (_localJedi != null)),
-            scrollDown: ((_jedi[_jedi.length-1] == null) || (_localJedi != null))
+            scrollUp: ((_jedi[0] === null) || (_localJedi !== null)),
+            scrollDown: ((_jedi[_jedi.length-1] === null) || (_localJedi !== null))
         };
     },
 
@@ -160,11 +160,8 @@ AppDispatcher.register(function(action) {
             jediMaster = action.jediMaster.data;
             populateJediList(jediMaster);
             break;
-        case AppConstants.JEDI_SCROLLUP:
-            scrollJediList(true);
-            break;
-        case AppConstants.JEDI_SCROLLDOWN:
-            scrollJediList(false);
+        case AppConstants.JEDI_SCROLL_LIST:
+            scrollJediList(action.direction);
             break;
         case AppConstants.JEDI_MOVED_TO_PLANET:
             findLocalJedies(action.currentPlanet);

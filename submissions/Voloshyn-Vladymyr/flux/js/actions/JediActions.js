@@ -30,17 +30,12 @@ var JediActions = {
         });
     },
 
-    scrollUp: function(id, text) {
+    scrollJediList: function(direction) {
         AppDispatcher.dispatch({
-            actionType: AppConstants.JEDI_SCROLLUP
+            actionType: AppConstants.JEDI_SCROLL_LIST,
+            direction: direction
         });
-    },
-
-    scrollDown: function(id, text) {
-        AppDispatcher.dispatch({
-            actionType: AppConstants.JEDI_SCROLLDOWN
-        });
-    },
+    }
 
 };
 
